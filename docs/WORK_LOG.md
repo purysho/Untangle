@@ -81,3 +81,10 @@
 - The first remote release attempt failed during npm ci because the upload path truncated the lockfile. Restored the complete validated JSON from the preceding repository revision with only version fields changed. No dependency changes were intended.
 - Verification CI run 38747780968 passed. Native release run 38747781139 passed Windows x64, Linux x64, Intel macOS and Apple Silicon macOS packaging and app smoke tests; publication completed successfully.
 - Confirmed https://github.com/purysho/Untangle/releases/tag/v0.3.1 is published with eight platform downloads and SHA256SUMS.txt. Signing and installer acceptance limitations remain unchanged.
+
+## 2026-10-15 — Integrated workspace design review
+
+- User requested AI included in the app, easy RAG search, daily questions, a preloaded library and a WolframAlpha/Desmos-inspired workspace. Selected approximately 1–2 GB for the complete offline-AI download target.
+- Read the requested cloner template README and workflow skill, current AI launcher, retrieval and packaging configuration, plus official product/model/resource-licensing references. Template supplies a UI reconstruction workflow, not proprietary computation engines.
+- Proposed architecture saved in docs/superpowers/specs/2026-10-15-integrated-workspace-design.md. It specifies bundled runtime/weights, hybrid search, original starter corpus, in-app daily practice, checked calculation and restricted interactive graphing. Model size/performance and semantic retrieval remain to be measured, not completed claims.
+- Design is awaiting user review before the detailed implementation plan. No v0.4 implementation or new installer shipped in this step.
