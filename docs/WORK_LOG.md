@@ -37,3 +37,10 @@
 - Desktop URL-policy tests observed failing before implementation; domain and policy suite now passes 20/20. Production build and local Linux unpacked packaging succeeded.
 - Signing/notarization credentials are not supplied; builds are explicitly documented as unsigned.
 - Packaging code review found a release-integrity issue: reusing a version could overwrite published downloads while preserving an older tag. Fixed publication to leave published releases untouched; only drafts can be retried. New release content requires a version bump.
+
+### Native release verification
+
+- GitHub Actions built Windows x64 installer + portable EXE, Linux x64 AppImage + deb, macOS x64 DMG + ZIP, and macOS arm64 DMG + ZIP.
+- Each of the four native runners passed the packaged-app smoke test: startup, bundled custom origin, sandbox/context isolation, absent renderer Node access, live analysis, saved text on reload and actual JSON export.
+- Intel macOS initially failed while detaching the temporary DMG volume (`hdiutil: Resource busy`). Retried only the failed job on a fresh runner without changing source; its build and smoke test passed. Windows, Linux and arm64 macOS succeeded on the first attempt.
+- Release workflow: https://github.com/purysho/Untangle/actions/runs/38732455121 (attempt 2). Installer installation and macOS Gatekeeper/notarization acceptance remain outside automated coverage.
