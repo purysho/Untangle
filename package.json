@@ -1,6 +1,6 @@
 {
   "name": "untangle",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -8,7 +8,12 @@
     "build": "tsc --noEmit && vite build",
     "test": "node --import tsx --test tests/*.test.ts",
     "typecheck": "tsc --noEmit",
-    "test:ui": "playwright test"
+    "test:ui": "playwright test",
+    "desktop": "npm run build && electron .",
+    "package": "npm run build && electron-builder --publish never",
+    "package:dir": "npm run build && electron-builder --dir --publish never",
+    "test:desktop": "node scripts/smoke-desktop.mjs",
+    "format:check": "prettier --check src desktop scripts/*.mjs tests *.ts *.yml package.json"
   },
   "dependencies": {
     "react": "^19.2.0",
@@ -19,6 +24,8 @@
     "@types/node": "^24.0.0",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
+    "electron": "^44.7.2",
+    "electron-builder": "^26.15.3",
     "prettier": "^3.9.10",
     "tsx": "^4.20.0",
     "typescript": "^5.9.3",
@@ -26,5 +33,13 @@
   },
   "engines": {
     "node": ">=22.12"
-  }
+  },
+  "description": "Local technical-writing workbench for ambiguity and procedural dependencies",
+  "author": {
+    "name": "Oliver Mclennan",
+    "email": "71287411+purysho@users.noreply.github.com"
+  },
+  "main": "desktop/main.cjs",
+  "homepage": "https://github.com/purysho/Untangle",
+  "license": "UNLICENSED"
 }

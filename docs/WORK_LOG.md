@@ -27,3 +27,13 @@
 - Inspected desktop (1440 × 1000 viewport) and mobile (390 × 844 viewport) full-page screenshots. Checked three-panel/stacked layout, typography, mint/orange semantics, editor readability, graph edges, and mobile overflow. No raster concept was used; all UI and graph artwork is code-native.
 - Strict TypeScript, production Vite build, and `git diff --check` passed. Production dependency audit: **0 vulnerabilities**.
 - Remaining limitations: heuristic rules and limited reference grammar; no complete STE grammar/dictionary, no technical correctness proof, no executable branch modelling. Source is saved only when analysed.
+
+## 2026-10-15 — Desktop packaging
+
+- Added Electron with a bundled custom protocol, sandboxed renderer, context isolation, disabled Node integration, denied permissions and restricted external navigation.
+- Added native Save As for JSON exports, single-instance focus, platform menus and existing-logo desktop icons in PNG, ICO and ICNS formats.
+- Configured Windows installer/portable EXE, Linux AppImage/deb and macOS Intel/Apple Silicon DMG/ZIP builds.
+- Added native-runner release matrix, packaged-app smoke tests and checksum generation. Publication waits for all platform builds and smoke tests.
+- Desktop URL-policy tests observed failing before implementation; domain and policy suite now passes 20/20. Production build and local Linux unpacked packaging succeeded.
+- Signing/notarization credentials are not supplied; builds are explicitly documented as unsigned.
+- Packaging code review found a release-integrity issue: reusing a version could overwrite published downloads while preserving an older tag. Fixed publication to leave published releases untouched; only drafts can be retried. New release content requires a version bump.

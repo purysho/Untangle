@@ -52,3 +52,33 @@ npm run build     # typecheck and production bundle
 npx playwright install chromium
 npm run test:ui   # browser workflow and responsive checks
 ```
+
+## Desktop downloads
+
+[Download the latest desktop release](https://github.com/purysho/Untangle/releases/latest).
+
+| Platform            | Download                                                        |
+| ------------------- | --------------------------------------------------------------- |
+| Windows 10/11 x64   | `windows-x64-setup.exe` installer or `windows-x64-portable.exe` |
+| Linux x64           | `.AppImage` or `.deb`                                           |
+| macOS Intel         | `mac-x64.dmg` or `mac-x64.zip`                                  |
+| macOS Apple Silicon | `mac-arm64.dmg` or `mac-arm64.zip`                              |
+
+Desktop builds open in their own app window and load bundled files directly. They do not start a web server, and users do not need Node.js. Analysed source is stored in the app's own profile; your browser's data is separate. Export JSON for backup. Closing an unsaved edit does not save that edit.
+
+The first builds are unsigned and macOS builds are not notarized. The OS may show a publisher/verification warning. Follow your organisation's installation policy. Linux AppImage may require FUSE and executable permission; Debian/Ubuntu users can choose `.deb` instead. Portable Windows builds still save app data in the user profile, not beside the executable.
+
+### Build desktop apps from source
+
+```sh
+npm ci
+npm run desktop          # build and launch in Electron
+npm run package -- --win --x64
+npm run package -- --linux --x64
+npm run package -- --mac --arm64
+npm run package -- --mac --x64
+```
+
+Build on the target operating system; macOS packaging requires macOS. Installers go into `release/`. The GitHub desktop-release workflow builds on native Windows, Linux, Intel macOS, and Apple Silicon macOS runners. It smoke-tests the unpacked app on each platform and publishes only when all four pass. Run it manually from Actions to retry a failed release.
+
+[Desktop architecture and release plan](docs/DESKTOP_PLAN.md).
