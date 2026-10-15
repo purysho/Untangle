@@ -1,14 +1,15 @@
-Untangle now runs as an offline desktop application. No Node.js installation, terminal or local web server is required.
+Untangle is rebuilt around its original purpose: a debugger for understanding.
 
-Downloads:
-- Windows x64: `setup.exe` installer or `portable.exe`.
-- Linux x64: AppImage or Debian/Ubuntu `.deb`.
-- macOS: `.dmg` or `.zip`; choose `x64` for Intel or `arm64` for Apple Silicon.
+- Friendly problem → answer → adaptive follow-up flow.
+- Nine bounded maths diagnostic packs plus code tracing; wider mathematics topic map.
+- Exact checks, worked solutions, fraction visuals, hypothesis graph, model-weight inspector and evidence replay.
+- Local knowledge library with PDF, TXT and Markdown import and source/page references.
+- Optional user-selected llama.cpp/GGUF local model with managed background process; no cloud API or model weights bundled.
+- Export/import learning sessions and separate subject progress.
+- U-shaped interwoven logo across the interface and desktop installers.
 
-The application uses its own storage directory. Analysed source persists between launches. Export JSON for backups and transfers. Browser-session data is separate from desktop-app data.
+Choose Windows installer/portable EXE, Linux AppImage/deb, or Intel/Apple Silicon macOS DMG/ZIP. No Node.js or local web server is needed. A new desktop learning profile begins separately from the old technical-writing source profile.
 
-This release is unsigned and macOS builds are not notarized. Windows or macOS can show an unknown-publisher or verification prompt. Follow your organisation's installation policy. Linux AppImage requires executable permission and may require FUSE; the `.deb` is an alternative for Debian/Ubuntu.
+These builds are unsigned and macOS is not notarized. OS publisher/verification prompts can appear. Follow your organisation's installation policy. AppImage may need FUSE/executable permission. Model files require a separate initial download; the core app works without them.
 
-Each platform build runs analysis tests, a production build and an unpacked desktop smoke test before publication. SHA256SUMS.txt provides integrity checks for all downloads. Installer installation, Gatekeeper acceptance and every supported OS version are not covered by the automated smoke test.
-
-Untangle is a heuristic technical-writing aid, not an ASD-STE100 compliance certificate or an operational aircraft-maintenance validator.
+Each native build smoke-tests startup, sandboxing, diagnosis, PDF import, local-AI bridge availability, persistence and session export. Model weights are uncalibrated diagnostic assumptions. Maths forms are bounded, advanced map entries can be retrieval-only, and model prose can contain errors. Installer installation/Gatekeeper acceptance is not covered by the smoke test.

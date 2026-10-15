@@ -1,0 +1,45 @@
+{
+  "runtime": "llama.cpp b11658",
+  "model": "Qwen3-0.6B-Q8_0",
+  "cpu": "AMD EPYC 9V74 80-Core Processor",
+  "cpuCount": 9,
+  "totalMemoryBytes": 10451464192,
+  "observedAt": "2026-10-15T13:28:47.268Z",
+  "cases": [
+    {
+      "request": {
+        "problem": "3/4 + 1/2",
+        "answer": "4/6",
+        "verified": "5/4",
+        "evidence": [
+          {
+            "source": "Untangle fractions note",
+            "text": "Use equivalent fractions with equal-sized parts: 1/2 = 2/4. Add 3/4 + 2/4 to get 5/4. Keep the shared denominator."
+          }
+        ]
+      },
+      "latencyMs": 3197,
+      "output": "The verified answer is \"5/4.\" [1] This is because 3/4 + 1/2 can be converted to 2/4 + 3/4, which equals 5/4.",
+      "mentionsVerified": true,
+      "containsCitation": true
+    },
+    {
+      "request": {
+        "problem": "20% of 80",
+        "answer": "100",
+        "verified": "16",
+        "evidence": [
+          {
+            "source": "Untangle percentages note",
+            "text": "Percent means out of 100. Multiply 20 by 80 and divide by 100: the result is 16."
+          }
+        ]
+      },
+      "latencyMs": 10264,
+      "output": "The verified answer is 16. [1]  \n20% of 80 is calculated by multiplying 20 by 80 and dividing by 100, resulting in 16.",
+      "mentionsVerified": true,
+      "containsCitation": true
+    }
+  ],
+  "startupMs": 1034
+}

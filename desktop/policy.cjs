@@ -19,7 +19,11 @@ function resolveAsset(value) {
       return null;
     const relative = raw.replace(/^\//, "") || "index.html";
     if (relative === "index.html" || relative === "icon.png") return relative;
-    if (/^assets\/[a-zA-Z0-9_-]+\.(js|css|svg|png|woff2?)$/.test(relative))
+    if (
+      /^assets\/[a-zA-Z0-9_.-]+\.(js|mjs|css|svg|png|woff2?|wasm)$/.test(
+        relative,
+      )
+    )
       return relative;
     return null;
   } catch {
@@ -28,6 +32,8 @@ function resolveAsset(value) {
 }
 function isAllowedExternal(value) {
   return (
+    value === "https://huggingface.co/Qwen/Qwen3-0.6B-GGUF" ||
+    value === "https://github.com/ggml-org/llama.cpp" ||
     value === "https://github.com/purysho/Untangle" ||
     value === "https://github.com/purysho/Untangle/"
   );

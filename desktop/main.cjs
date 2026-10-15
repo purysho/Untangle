@@ -7,6 +7,7 @@ const {
   net,
   Menu,
   dialog,
+  ipcMain,
 } = require("electron");
 const path = require("node:path");
 const { pathToFileURL } = require("node:url");
@@ -22,6 +23,8 @@ protocol.registerSchemesAsPrivileged([
     },
   },
 ]);
+const localAI = require("./local-ai.cjs");
+const { isTrustedSender } = require("./ai-policy.cjs");
 const home = "untangle://app/";
 let mainWindow;
 const singleInstance = app.requestSingleInstanceLock();
@@ -37,6 +40,23 @@ else {
   app
     .whenReady()
     .then(async () => {
+      const trusted = (event) =>
+        isTrustedSender(
+          event.senderFrame?.url,
+          event.sender === mainWindow?.webContents,
+          event.senderFrame === event.sender.mainFrame,
+        );
+      for (const [channel, handler] of Object.entries({
+        "ai:status": () => localAI.status(),
+        "ai:start": () => localAI.start(dialog, mainWindow),
+        "ai:stop": () => localAI.stop(),
+        "ai:explain": (value) => localAI.explain(value),
+      }))
+        ipcMain.handle(channel, (event, value) => {
+          if (!trusted(event)) throw new Error("Untrusted request.");
+          return handler(value);
+        });
+      app.on("before-quit", () => localAI.stop());
       const assetRoot = path.join(app.getAppPath(), "dist");
       protocol.handle("untangle", async (request) => {
         const relative = resolveAsset(request.url);
@@ -48,7 +68,7 @@ else {
           const headers = new Headers(response.headers);
           headers.set(
             "Content-Security-Policy",
-            "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; frame-src 'none'; form-action 'none'",
+            "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; frame-src 'none'; form-action 'none'; worker-src 'self' blob:",
           );
           headers.set("X-Content-Type-Options", "nosniff");
           return new Response(response.body, {
@@ -85,6 +105,7 @@ else {
           icon: path.join(app.getAppPath(), "build", "icon.png"),
           autoHideMenuBar: true,
           webPreferences: {
+            preload: path.join(__dirname, "preload.cjs"),
             nodeIntegration: false,
             contextIsolation: true,
             sandbox: true,

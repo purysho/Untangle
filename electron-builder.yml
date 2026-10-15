@@ -10,6 +10,8 @@ files:
   - desktop/**
   - build/icon.png
   - package.json
+  - licenses/**
+  - THIRD_PARTY_NOTICES.md
   - "!node_modules/**"
 artifactName: "${productName}-${version}-${os}-${arch}.${ext}"
 win:

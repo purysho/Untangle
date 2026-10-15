@@ -1,6 +1,6 @@
 {
   "name": "untangle",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -13,11 +13,9 @@
     "package": "npm run build && electron-builder --publish never",
     "package:dir": "npm run build && electron-builder --dir --publish never",
     "test:desktop": "node scripts/smoke-desktop.mjs",
-    "format:check": "prettier --check src desktop scripts/*.mjs tests *.ts *.yml package.json"
-  },
-  "dependencies": {
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "format:check": "prettier --check src desktop scripts/*.mjs tests *.ts *.yml package.json",
+    "evaluate": "node --import tsx scripts/evaluate-learning.ts",
+    "benchmark:ai": "node scripts/benchmark-local-ai.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.56.0",
@@ -29,12 +27,15 @@
     "prettier": "^3.9.10",
     "tsx": "^4.20.0",
     "typescript": "^5.9.3",
-    "vite": "^7.3.0"
+    "vite": "^7.3.0",
+    "pdfjs-dist": "^6.4.299",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
   },
   "engines": {
     "node": ">=22.12"
   },
-  "description": "Local technical-writing workbench for ambiguity and procedural dependencies",
+  "description": "An offline-first debugger for understanding: adaptive maths and code diagnostics with local knowledge retrieval",
   "author": {
     "name": "Oliver Mclennan",
     "email": "71287411+purysho@users.noreply.github.com"

@@ -44,3 +44,18 @@
 - Each of the four native runners passed the packaged-app smoke test: startup, bundled custom origin, sandbox/context isolation, absent renderer Node access, live analysis, saved text on reload and actual JSON export.
 - Intel macOS initially failed while detaching the temporary DMG volume (`hdiutil: Resource busy`). Retried only the failed job on a fresh runner without changing source; its build and smoke test passed. Windows, Linux and arm64 macOS succeeded on the first attempt.
 - Release workflow: https://github.com/purysho/Untangle/actions/runs/38732455121 (attempt 2). Installer installation and macOS Gatekeeper/notarization acceptance remain outside automated coverage.
+
+## 2026-10-15 — Learning rebuild v0.3.0
+
+- Corrected the product scope back to the original learner-diagnosis concept. Preserved the writing checker as a secondary footer tool.
+- Wrote learning brief, architecture/equations, build plan, discovery and evaluation contract before implementation.
+- Implemented exact bounded domain adapters, Bayesian updates with residual hypotheses, expected-information-gain question selection, event replay and session transfer.
+- User clarified mathematics is broader than fractions: implemented nine bounded maths packs plus coding and a wider retrieval-only mathematics map.
+- Added friendly responsive interface, fraction bars, hypothesis graph, replay inspector, same-score synthetic demonstration, local passage retrieval and PDF/TXT/Markdown ingestion.
+- Added optional managed llama-server/GGUF integration through sandboxed preload IPC, trusted main-frame validation, token-authenticated loopback transport, context/generation limits and process cleanup.
+- Ran an actual Qwen3-0.6B-Q8_0 / llama.cpp b11658 trial. Initial outputs revealed truncation and an invented source reference. Disabled optional model thinking, adjusted budgets, restricted cited labels and rejected out-of-range citations. Final two-case raw output and host details are in docs/learning/LOCAL_AI_BENCHMARK.json. No general quality or target-PC speed claim follows from this trial; peak model RAM was not measured.
+- Synthetic evaluation: adaptive selection recovered 40/40 authored strategy cases versus 39/40 with fixed generated questions, within the same authored model. This is not evidence of real-student efficacy.
+- Independent review found PDF worker asset names with dots were denied, imported sessions restored an already-used task, and Unicode mixed numbers silently concatenated. Added regressions, observed failure, then fixed each. Added native PDF import to desktop smoke coverage.
+- Added repeated-question protection to avoid counting the same task as independent evidence; subject progress is retained separately.
+- Changed the existing mint interwoven mark to a U shape in the UI and generated PNG/ICO/ICNS assets, per user steering.
+- Current local verification: 39 unit tests, six browser tests and strict production build pass. Desktop/mobile screenshots inspected for layout, text, colour, equation readability, navigation and overflow. New native release matrix verification follows.

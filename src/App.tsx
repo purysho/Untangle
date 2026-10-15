@@ -1,343 +1,564 @@
 import { useRef, useState } from "react";
-import { analyse, type Finding, type Analysis } from "./engine";
-import { examples } from "./examples";
-import { Graph } from "./Graph";
-const storageKey = "untangle.source.v1";
-function initialSource() {
+import {
+  type Domain,
+  parseTask,
+  parseAnswer,
+  predict,
+  examples,
+  titles,
+  allDomains,
+  solution,
+  type Task,
+} from "./learning/domain";
+import {
+  makeSession,
+  record,
+  replay,
+  assessment,
+  nextTask,
+  type Session,
+} from "./learning/inference";
+import { builtins, searchKnowledge, type Passage } from "./knowledge/retrieval";
+import { Problem, FractionVisual, Fraction } from "./components/MathView";
+import { Inspector } from "./components/Inspector";
+import { Knowledge } from "./components/Knowledge";
+import { LocalAI } from "./components/LocalAI";
+import { Topics } from "./components/Topics";
+import { Demo } from "./components/Demo";
+import { TechnicalWorkbench } from "./TechnicalWorkbench";
+import "./learning.css";
+const sessionKey = "untangle.learning.v1",
+  libraryKey = "untangle.library.v1";
+function restore() {
   try {
-    return (
-      localStorage.getItem(storageKey)?.slice(0, 20000) ?? examples[0].text
-    );
+    const raw = localStorage.getItem(sessionKey);
+    return raw ? replay(raw) : makeSession("fractions");
   } catch {
-    return examples[0].text;
+    return makeSession("fractions");
   }
 }
-function initialAnalysis(source: string): Analysis {
+function restoreLibrary(): Passage[] {
   try {
-    return analyse(source);
+    const raw = localStorage.getItem(libraryKey);
+    if (!raw || raw.length > 1500000) return [];
+    const data = JSON.parse(raw);
+    return Array.isArray(data)
+      ? data
+          .filter(
+            (p) =>
+              typeof p.id === "string" &&
+              typeof p.text === "string" &&
+              p.text.length <= 1000 &&
+              typeof p.source === "string" &&
+              typeof p.title === "string",
+          )
+          .slice(0, 1500)
+      : [];
   } catch {
-    return analyse("");
+    return [];
   }
+}
+function saveFile(name: string, data: unknown) {
+  const url = URL.createObjectURL(
+    new Blob([JSON.stringify(data, null, 2)], { type: "application/json" }),
+  );
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = name;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 export function App() {
-  const [source, setSource] = useState(initialSource);
-  const [analysis, setAnalysis] = useState(() => initialAnalysis(source));
-  const [selected, setSelected] = useState<string | null>(null);
-  const [activeFinding, setActiveFinding] = useState<Finding | null>(null);
-  const [filter, setFilter] = useState("all");
-  const [explicitOnly, setExplicitOnly] = useState(false);
-  const [message, setMessage] = useState("");
+  const [session, setSession] = useState(restore);
+  const [domain, setDomain] = useState<Domain>(session.domain);
+  const [input, setInput] = useState(
+    session.events.length
+      ? (nextTask(
+          session.domain,
+          session.posterior,
+          session.events.map((e) => e.task.id),
+        )?.input ?? examples[session.domain])
+      : examples[session.domain],
+  );
+  const [answer, setAnswer] = useState("");
+  const [result, setResult] = useState<{
+    task: Task;
+    answer: string;
+    correct: boolean;
+  } | null>(null);
   const [error, setError] = useState("");
-  const editor = useRef<HTMLTextAreaElement>(null);
-  const dirty = source !== analysis.source;
-  function run(text = source) {
+  const [status, setStatus] = useState("");
+  const [view, setView] = useState("learn");
+  const [libraryQuery, setLibraryQuery] = useState(
+    "fractions denominator equal parts",
+  );
+  const [passages, setPassages] = useState(restoreLibrary);
+  const [aiText, setAiText] = useState("");
+  const [aiBusy, setAiBusy] = useState(false);
+  const requestId = useRef(0);
+  const fileInput = useRef<HTMLInputElement>(null);
+  let task: Task | null = null;
+  try {
+    task = parseTask(domain, input);
+  } catch {}
+  const info = assessment(session);
+  const suggested = nextTask(
+    domain,
+    session.posterior,
+    session.events.map((e) => e.task.id),
+  );
+  const query =
+    domain === "fractions"
+      ? "adding fractions denominator equal parts"
+      : domain === "algebra"
+        ? "linear equation inverse operations coefficient"
+        : domain === "coding"
+          ? "Python range stop sum accumulation"
+          : titles[domain];
+  const hits = searchKnowledge(query, [...builtins, ...passages]);
+  function persist(next: Session) {
+    setSession(next);
     try {
-      const next = analyse(text);
-      setAnalysis(next);
-      setSelected(null);
-      setActiveFinding(null);
-      setError("");
-      try {
-        localStorage.setItem(storageKey, text);
-        setMessage("Analysed · saved on this device");
-      } catch {
-        setMessage("Analysed · browser storage unavailable");
+      localStorage.setItem(sessionKey, JSON.stringify(next));
+      localStorage.setItem(
+        `${sessionKey}:${next.domain}`,
+        JSON.stringify(next),
+      );
+      setStatus("Progress saved on this device.");
+    } catch {
+      setStatus("Browser storage unavailable. Export your session to keep it.");
+    }
+  }
+  function resetFeedback() {
+    requestId.current++;
+    setAiText("");
+    setAiBusy(false);
+    setResult(null);
+    setError("");
+  }
+  function subject(next: Domain) {
+    let restored = makeSession(next);
+    try {
+      const raw = localStorage.getItem(`${sessionKey}:${next}`);
+      if (raw) {
+        const parsed = replay(raw);
+        if (parsed.domain === next) restored = parsed;
       }
+    } catch {}
+    setDomain(next);
+    persist(restored);
+    setInput(
+      restored.events.length
+        ? (nextTask(
+            next,
+            restored.posterior,
+            restored.events.map((e) => e.task.id),
+          )?.input ?? examples[next])
+        : examples[next],
+    );
+    setAnswer("");
+    resetFeedback();
+    setView("learn");
+  }
+  function submit(e: React.FormEvent) {
+    e.preventDefault();
+    try {
+      const t = parseTask(domain, input);
+      parseAnswer(answer);
+      const next = record(session, t, answer);
+      persist(next);
+      setResult({
+        task: t,
+        answer,
+        correct: parseAnswer(answer) === predict(t, "correct"),
+      });
+      setError("");
+      setAiText("");
+      requestId.current++;
     } catch (e) {
       setError((e as Error).message);
     }
   }
-  function inspect(f: Finding) {
-    setSelected(f.step);
-    setActiveFinding(f);
-    editor.current?.focus();
-    editor.current?.setSelectionRange(f.start, f.end);
-  }
-  function chooseStep(id: string) {
-    setSelected(id);
-    setActiveFinding(analysis.findings.find((f) => f.step === id) ?? null);
-  }
-  function exportReport() {
-    const blob = new Blob([JSON.stringify(analysis, null, 2)], {
-      type: "application/json",
-    });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "untangle-analysis.json";
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-    setMessage("Analysis exported");
-  }
-  const findings = analysis.findings.filter(
-    (f) =>
-      (!selected || f.step === selected) &&
-      (filter === "all" || f.severity === filter),
-  );
-  const explicitCount = analysis.edges.filter(
-    (e) => e.kind === "explicit",
-  ).length;
+  if (view === "writing")
+    return (
+      <>
+        <div className="legacy-return">
+          <button onClick={() => setView("learn")}>← Back to learning</button>
+        </div>
+        <TechnicalWorkbench />
+      </>
+    );
   return (
-    <div className="app">
-      <header className="topbar">
-        <a className="brand" href="./">
-          <svg viewBox="0 0 32 32" aria-hidden="true">
+    <div className="learn-app">
+      <header className="learn-header">
+        <button
+          className="learn-brand"
+          onClick={() => setView("learn")}
+          aria-label="Untangle home"
+        >
+          <svg viewBox="0 0 40 40" aria-hidden="true">
             <path
-              d="M4 8h10c12 0-8 16 4 16h10M4 24h7C23 24 7 8 20 8h8"
+              d="M8 5v20c0 13 18 13 18 0V5M15 5v20c0 7 18 7 18 0V5"
               fill="none"
               stroke="currentColor"
-              strokeWidth="3"
+              strokeWidth="3.5"
               strokeLinecap="round"
             />
           </svg>
-          untangle<span className="version">/ 0.1</span>
-        </a>
-        <div className="header-right">
-          <span className="local">
-            <i /> Local workspace
-          </span>
-          <a
-            href="https://github.com/purysho/Untangle"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Source ↗
-          </a>
-        </div>
-      </header>
-      <main>
-        <section className="intro">
-          <div>
-            <h1>Clarity, before execution.</h1>
-            <p>Inspect ambiguous language. Trace what depends on what.</p>
-          </div>
-          <button
-            className="secondary"
-            onClick={exportReport}
-            disabled={dirty || !!error || !analysis.steps.length}
-          >
-            Export analysis <span>↗</span>
-          </button>
-        </section>
-        <div className="toolbar">
-          <div>
-            <label htmlFor="example">Procedure</label>
-            <select
-              id="example"
-              defaultValue="0"
-              onChange={(e) => {
-                const sample = examples[Number(e.target.value)];
-                setSource(sample.text);
-                run(sample.text);
-              }}
+          untangle
+        </button>
+        <nav aria-label="Main navigation">
+          {[
+            ["learn", "Learn"],
+            ["topics", "Maths topics"],
+            ["library", "Knowledge library"],
+            ["ai", "Local AI"],
+            ["demo", "See the engine"],
+          ].map(([key, label]) => (
+            <button
+              key={key}
+              className={view === key ? "selected" : ""}
+              onClick={() => setView(key)}
             >
-              {examples.map((s, i) => (
-                <option key={s.name} value={i}>
-                  {s.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="snapshot" role="status">
-            {dirty
-              ? "Source changed · analyse to update"
-              : message || "Ready to inspect"}
-          </div>
-          <button className="primary" onClick={() => run()}>
-            Analyse procedure <span>→</span>
-          </button>
-        </div>
-        {error && (
-          <p className="error" role="alert">
-            {error}
-          </p>
-        )}
-        <div className="workbench">
-          <section className="source-panel">
-            <div className="panel-heading">
-              <h2>
-                <span>01</span> Source procedure
-              </h2>
-              <span className="mono">EDITABLE</span>
-            </div>
-            <div className="source-title">Technical instructions</div>
-            <label className="sr-only" htmlFor="source">
-              Procedure source
-            </label>
-            <textarea
-              id="source"
-              ref={editor}
-              spellCheck={false}
-              value={source}
-              maxLength={20000}
-              onChange={(e) => {
-                setSource(e.target.value);
-                setError("");
-                setMessage("");
-              }}
-            />
-            <div className="editor-footer">
-              <span>{source.length.toLocaleString()} / 20,000 characters</span>
-              <span>TXT</span>
-            </div>
-            <div className="source-note">
-              <span className="note-icon">i</span>
+              {label}
+            </button>
+          ))}
+        </nav>
+        <span className="offline-label">
+          <i /> Works offline
+        </span>
+      </header>
+      <main className="learn-main">
+        {view === "topics" ? (
+          <Topics
+            choose={subject}
+            search={(q) => {
+              setLibraryQuery(q);
+              setView("library");
+            }}
+          />
+        ) : view === "library" ? (
+          <Knowledge
+            key={libraryQuery}
+            initialQuery={libraryQuery}
+            passages={passages}
+            onChange={(next) => {
+              try {
+                localStorage.setItem(libraryKey, JSON.stringify(next));
+                setPassages(next);
+              } catch {
+                throw new Error(
+                  "Not enough local storage. Remove an imported document first.",
+                );
+              }
+            }}
+          />
+        ) : view === "ai" ? (
+          <LocalAI />
+        ) : view === "demo" ? (
+          <Demo />
+        ) : (
+          <>
+            <section className="learn-intro">
+              <h1>Let’s untangle it.</h1>
               <p>
-                One numbered step per line.
-                <br />
-                Use “after step 2” or “before step 4” for explicit dependencies.
+                A wrong answer is a clue. Let’s find the thinking behind it.
               </p>
-            </div>
-            <div className="method">
-              <h3>Evidence, not guesswork.</h3>
-              <p>
-                Each flag links to source text and an explainable rule.
-                Technical intent stays with the author.
-              </p>
-            </div>
-          </section>
-          <section className="graph-panel">
-            <div className="panel-heading">
-              <h2>
-                <span>02</span> Procedure map
-              </h2>
-              <span className="mono">{analysis.steps.length} STEPS</span>
-            </div>
-            <div className="graph-tools">
-              <div className="legend">
-                <span>
-                  <i className="solid" />
-                  Explicit
-                </span>
-                <span>
-                  <i className="dashed" />
-                  Order only
-                </span>
-              </div>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={explicitOnly}
-                  onChange={(e) => setExplicitOnly(e.target.checked)}
-                />{" "}
-                Explicit only
-              </label>
-            </div>
-            {dirty ? (
-              <div className="stale">
-                <h3>Analysis needs an update</h3>
-                <p>
-                  The source has changed. Analyse it to rebuild the graph and
-                  findings.
-                </p>
-                <button className="primary" onClick={() => run()}>
-                  Update analysis →
-                </button>
-              </div>
-            ) : analysis.steps.length ? (
-              <Graph
-                analysis={analysis}
-                selected={selected}
-                onSelect={chooseStep}
-                explicitOnly={explicitOnly}
-              />
-            ) : (
-              <div className="stale">
-                <h3>Start with an instruction.</h3>
-                <p>Add numbered steps, then analyse your procedure.</p>
-              </div>
-            )}
-            <div className="graph-footer">
-              <span>{explicitCount} explicit dependencies</span>
-              <span>Click a step to inspect</span>
-            </div>
-          </section>
-          <section className="findings-panel">
-            <div className="panel-heading">
-              <h2>
-                <span>03</span> Review findings
-              </h2>
-              <span className="count">
-                {dirty ? "—" : analysis.findings.length}
-              </span>
-            </div>
-            <div className="filter-row">
-              <label className="sr-only" htmlFor="severity">
-                Filter severity
-              </label>
-              <select
-                id="severity"
-                value={filter}
-                onChange={(e) => setFilter(e.target.value)}
-              >
-                <option value="all">All findings</option>
-                <option value="warning">Warnings</option>
-                <option value="review">Review suggestions</option>
-              </select>
-              {selected && (
-                <button
-                  className="text-button"
-                  onClick={() => {
-                    setSelected(null);
-                    setActiveFinding(null);
-                  }}
+            </section>
+            <div className="subject-tabs">
+              <label htmlFor="maths-topic">
+                Maths topic{" "}
+                <select
+                  id="maths-topic"
+                  value={domain === "coding" ? "fractions" : domain}
+                  onChange={(e) => subject(e.target.value as Domain)}
                 >
-                  Clear step {selected} ×
-                </button>
-              )}
+                  {allDomains
+                    .filter((d) => d !== "coding")
+                    .map((d) => (
+                      <option key={d} value={d}>
+                        {titles[d]}
+                      </option>
+                    ))}
+                </select>
+              </label>
+              <button
+                className={domain === "coding" ? "active" : ""}
+                onClick={() => subject("coding")}
+              >
+                Code tracing
+              </button>
+              <button onClick={() => setView("topics")}>
+                Explore the maths map ↗
+              </button>
             </div>
-            <div className="findings-scroll">
-              {dirty ? (
-                <p className="empty">
-                  Update the analysis to inspect findings.
-                </p>
-              ) : findings.length ? (
-                findings.map((f) => (
-                  <button
-                    key={f.id}
-                    className={`finding ${activeFinding?.id === f.id ? "active" : ""}`}
-                    onClick={() => inspect(f)}
-                  >
-                    <div className="finding-meta">
-                      <span className={f.severity}>
-                        {f.severity === "warning" ? "WARNING" : "REVIEW"}
-                      </span>
-                      <span>STEP {f.step}</span>
-                    </div>
-                    <h3>{f.title}</h3>
-                    <p className="quote">
-                      “{analysis.source.slice(f.start, f.end)}”
-                    </p>
-                    <span className="rule-label">
-                      {f.rule} <span>↗</span>
-                    </span>
-                  </button>
-                ))
-              ) : (
-                <div className="empty">
-                  <h3>No findings in this view.</h3>
-                  <p>
-                    Rule coverage is limited. This does not establish technical
-                    correctness or STE compliance.
-                  </p>
+            <div className="learning-layout">
+              <section className="question-card">
+                <div className="question-top">
+                  <span>{titles[domain]}</span>
+                  <span>{session.events.length} answers explored</span>
                 </div>
-              )}
+                <label className="field-label" htmlFor="problem">
+                  Your problem
+                </label>
+                <input
+                  id="problem"
+                  className="problem-input"
+                  value={input}
+                  onChange={(e) => {
+                    setInput(e.target.value);
+                    setAnswer("");
+                    resetFeedback();
+                  }}
+                  maxLength={160}
+                />
+                <p className="input-help">
+                  {domain === "fractions"
+                    ? "Add two fractions. Use a/b + c/d, including Unicode fractions such as ¾."
+                    : domain === "algebra"
+                      ? "Solve a linear equation in the form ax + b = c."
+                      : domain === "coding"
+                        ? "Predict this Python-style expression. We trace supported range sums; submitted code is never executed."
+                        : `Supported form: ${examples[domain]}. Enter a problem in this form to explore your method.`}
+                </p>
+                {task && <Problem task={task} />}
+                <form onSubmit={submit}>
+                  <label className="field-label" htmlFor="learner-answer">
+                    What answer did you get?
+                  </label>
+                  <div className="answer-row">
+                    <input
+                      id="learner-answer"
+                      value={answer}
+                      onChange={(e) => setAnswer(e.target.value)}
+                      placeholder={
+                        domain === "fractions"
+                          ? "For example, 4/6"
+                          : "Enter a number or fraction"
+                      }
+                      maxLength={80}
+                      autoComplete="off"
+                    />
+                    <button
+                      className="action-button"
+                      type="submit"
+                      disabled={!answer.trim()}
+                    >
+                      Explore my answer <span>→</span>
+                    </button>
+                  </div>
+                </form>
+                {error && (
+                  <p role="alert" className="learn-error">
+                    {error}
+                  </p>
+                )}
+                {result && (
+                  <section className="answer-feedback" aria-live="polite">
+                    <h2>
+                      {result.correct
+                        ? "That answer checks out."
+                        : "Let’s look at your method."}
+                    </h2>
+                    <p>
+                      Your answer: <strong>{result.answer}</strong>.{" "}
+                      {result.correct
+                        ? "Another question can help us check the method behind it."
+                        : "Several methods or a slip could explain this. One answer is not enough to decide."}
+                    </p>
+                    <p>
+                      {info.tentative
+                        ? "We’re still gathering clues."
+                        : info.top.id === "correct"
+                          ? "Your recent answers fit a consistent method."
+                          : `Your recent answers most closely fit “${info.top.name.toLowerCase()}” in this model. Let’s check with another question.`}
+                    </p>
+                    {suggested && (
+                      <button
+                        className="action-button"
+                        onClick={() => {
+                          setInput(suggested.input);
+                          setAnswer("");
+                          resetFeedback();
+                        }}
+                      >
+                        Try a useful follow-up →
+                      </button>
+                    )}
+                    <details className="worked-solution">
+                      <summary>See the checked explanation</summary>
+                      <p className="verified-answer">
+                        Checked answer:{" "}
+                        <Fraction value={predict(result.task, "correct")!} />
+                      </p>
+                      <FractionVisual task={result.task} />
+                      <ol>
+                        {solution(result.task).map((line, i) => (
+                          <li key={i}>{line}</li>
+                        ))}
+                      </ol>
+                    </details>
+                    <details className="retrieved-evidence">
+                      <summary>
+                        Read supporting material ({hits.length} sources)
+                      </summary>
+                      {hits.map(({ passage }, i) => (
+                        <article key={passage.id}>
+                          <h3>
+                            [{i + 1}] {passage.title}
+                          </h3>
+                          <p>{passage.text}</p>
+                          <small>
+                            {passage.source}
+                            {passage.page ? ` · page ${passage.page}` : ""}
+                          </small>
+                        </article>
+                      ))}
+                      <button
+                        className="quiet-button"
+                        disabled={aiBusy}
+                        onClick={async () => {
+                          if (!window.untangleAI) {
+                            setAiText(
+                              "Open the desktop app and start a local model in Local AI settings. The checked explanation above works without AI.",
+                            );
+                            return;
+                          }
+                          const id = ++requestId.current;
+                          setAiBusy(true);
+                          setAiText("");
+                          try {
+                            const text = await window.untangleAI.explain({
+                              problem: result.task.display,
+                              answer: result.answer,
+                              verified: predict(result.task, "correct")!,
+                              evidence: hits.map((h) => ({
+                                source: h.passage.source,
+                                text: h.passage.text,
+                              })),
+                            });
+                            if (requestId.current === id) setAiText(text);
+                          } catch (e) {
+                            if (requestId.current === id)
+                              setAiText((e as Error).message);
+                          } finally {
+                            if (requestId.current === id) setAiBusy(false);
+                          }
+                        }}
+                      >
+                        {aiBusy
+                          ? "Local model is explaining…"
+                          : "Explain with my local model"}
+                      </button>
+                      {aiText && (
+                        <div className="ai-output">
+                          <strong>
+                            Local-model output · may contain mistakes
+                          </strong>
+                          <p>{aiText}</p>
+                        </div>
+                      )}
+                    </details>
+                  </section>
+                )}
+                <p className="save-status" role="status">
+                  {status}
+                </p>
+              </section>
+              <aside className="learning-aside">
+                <h2>Understanding, one clue at a time.</h2>
+                <ol>
+                  <li>
+                    <span>1</span>Try a problem your way.
+                  </li>
+                  <li>
+                    <span>2</span>Explore a carefully chosen follow-up.
+                  </li>
+                  <li>
+                    <span>3</span>See the explanation that helps.
+                  </li>
+                </ol>
+                <div className="session-actions">
+                  <h3>Your session</h3>
+                  <button
+                    onClick={() =>
+                      saveFile("Untangle-learning-session.json", session)
+                    }
+                    disabled={!session.events.length}
+                  >
+                    Export session ↗
+                  </button>
+                  <button onClick={() => fileInput.current?.click()}>
+                    Open a saved session
+                  </button>
+                  <button
+                    onClick={() => {
+                      persist(makeSession(domain));
+                      setInput(examples[domain]);
+                      setAnswer("");
+                      resetFeedback();
+                    }}
+                  >
+                    Start a fresh session
+                  </button>
+                  <input
+                    ref={fileInput}
+                    aria-label="Import learning session"
+                    type="file"
+                    accept=".json"
+                    hidden
+                    onChange={async (e) => {
+                      const f = e.target.files?.[0];
+                      if (!f) return;
+                      try {
+                        if (f.size > 200000)
+                          throw new Error("Session file is too large.");
+                        const next = replay(await f.text());
+                        setDomain(next.domain);
+                        persist(next);
+                        setInput(
+                          nextTask(
+                            next.domain,
+                            next.posterior,
+                            next.events.map((e) => e.task.id),
+                          )?.input ?? examples[next.domain],
+                        );
+                        setAnswer("");
+                        resetFeedback();
+                      } catch (e) {
+                        setError((e as Error).message);
+                      } finally {
+                        if (fileInput.current) fileInput.current.value = "";
+                      }
+                    }}
+                  />
+                </div>
+                <p className="aside-note">
+                  No account. No cloud required. You can inspect every
+                  diagnostic assumption below.
+                </p>
+              </aside>
             </div>
-            {activeFinding && !dirty && (
-              <div className="inspector">
-                <div className="inspector-title">WHY IT WAS FLAGGED</div>
-                <p>{activeFinding.explanation}</p>
-                <div className="inspector-title">AUTHOR ACTION</div>
-                <p>{activeFinding.suggestion}</p>
-              </div>
+            <Inspector session={session} />
+            {session.events.length > 0 && (
+              <details className="history">
+                <summary>Your answer trail ({session.events.length})</summary>
+                {session.events.map((e, i) => (
+                  <p key={i}>
+                    <span>{i + 1}.</span> {e.task.display} →{" "}
+                    <strong>{e.answer}</strong>
+                  </p>
+                ))}
+              </details>
             )}
-          </section>
-        </div>
-        <footer>
-          <span>
-            <i /> All analysis runs on your device
-          </span>
-          <span>Heuristic authoring aid · No ASD-STE100 compliance claim</span>
+          </>
+        )}
+        <footer className="learn-footer">
+          <span>Built to explore understanding.</span>
+          <button onClick={() => setView("writing")}>
+            Technical writing tool
+          </button>
+          <span>Model weights are provisional, not a learner diagnosis.</span>
         </footer>
       </main>
     </div>

@@ -29,3 +29,13 @@ test("only source repository may open externally", () => {
   ])
     assert.equal(isAllowedExternal(url), false, url);
 });
+test("serves Vite PDF worker filenames containing dots", () => {
+  assert.equal(
+    resolveAsset("untangle://app/assets/pdf.worker.min-CjEcRF4W.mjs"),
+    "assets/pdf.worker.min-CjEcRF4W.mjs",
+  );
+  assert.equal(
+    resolveAsset("untangle://app/assets/pdf.worker.min-Dualf0xi.js"),
+    "assets/pdf.worker.min-Dualf0xi.js",
+  );
+});

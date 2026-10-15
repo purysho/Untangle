@@ -1,0 +1,568 @@
+{
+  "protocol": "Eight responses from each of 40 synthetic fixed-strategy learners. Adaptive information-gain selection versus the first eight fixed generated questions. Same authored likelihood model for both. Not a human learning or calibrated diagnosis benchmark.",
+  "cases": 40,
+  "adaptiveRecovered": 40,
+  "fixedRecovered": 39,
+  "rows": [
+    {
+      "domain": "arithmetic",
+      "strategy": "correct",
+      "adaptive": {
+        "leading": "correct",
+        "targetWeight": 0.9999950118995204,
+        "entropyBits": 0.00009505209710144048
+      },
+      "fixed": {
+        "leading": "correct",
+        "targetWeight": 0.9999950118995204,
+        "entropyBits": 0.00009505209710144048
+      }
+    },
+    {
+      "domain": "arithmetic",
+      "strategy": "left",
+      "adaptive": {
+        "leading": "left",
+        "targetWeight": 0.9999950118995204,
+        "entropyBits": 0.00009505209710144048
+      },
+      "fixed": {
+        "leading": "left",
+        "targetWeight": 0.9999950118995204,
+        "entropyBits": 0.00009505209710144048
+      }
+    },
+    {
+      "domain": "arithmetic",
+      "strategy": "add",
+      "adaptive": {
+        "leading": "add",
+        "targetWeight": 0.9999950118995203,
+        "entropyBits": 0.00009505209710160064
+      },
+      "fixed": {
+        "leading": "add",
+        "targetWeight": 0.9999950118995203,
+        "entropyBits": 0.00009505209710160064
+      }
+    },
+    {
+      "domain": "arithmetic",
+      "strategy": "multiply",
+      "adaptive": {
+        "leading": "multiply",
+        "targetWeight": 0.9999950118995203,
+        "entropyBits": 0.00009505209710160066
+      },
+      "fixed": {
+        "leading": "multiply",
+        "targetWeight": 0.9999950118995203,
+        "entropyBits": 0.00009505209710160066
+      }
+    },
+    {
+      "domain": "fractions",
+      "strategy": "correct",
+      "adaptive": {
+        "leading": "correct",
+        "targetWeight": 0.9999950118995204,
+        "entropyBits": 0.00009505209710144048
+      },
+      "fixed": {
+        "leading": "correct",
+        "targetWeight": 0.9999918052853501,
+        "entropyBits": 0.00015028760247373454
+      }
+    },
+    {
+      "domain": "fractions",
+      "strategy": "across",
+      "adaptive": {
+        "leading": "across",
+        "targetWeight": 0.9999950118995204,
+        "entropyBits": 0.00009505209710144048
+      },
+      "fixed": {
+        "leading": "across",
+        "targetWeight": 0.9999918052897752,
+        "entropyBits": 0.00015028742578036838
+      }
+    },
+    {
+      "domain": "fractions",
+      "strategy": "first",
+      "adaptive": {
+        "leading": "first",
+        "targetWeight": 0.9999950118995203,
+        "entropyBits": 0.00009505209710160064
+      },
+      "fixed": {
+        "leading": "first",
+        "targetWeight": 0.9999918052853501,
+        "entropyBits": 0.00015028760247373448
+      }
+    },
+    {
+      "domain": "fractions",
+      "strategy": "larger",
+      "adaptive": {
+        "leading": "larger",
+        "targetWeight": 0.9999950118995203,
+        "entropyBits": 0.00009505209710160066
+      },
+      "fixed": {
+        "leading": "larger",
+        "targetWeight": 0.99999180528535,
+        "entropyBits": 0.00015028760247389465
+      }
+    },
+    {
+      "domain": "percentages",
+      "strategy": "correct",
+      "adaptive": {
+        "leading": "correct",
+        "targetWeight": 0.9999950118995204,
+        "entropyBits": 0.00009505209710144048
+      },
+      "fixed": {
+        "leading": "correct",
+        "targetWeight": 0.9787014691197686,
+        "entropyBits": 0.14892465587318765
+      }
+    },
+    {
+      "domain": "percentages",
+      "strategy": "add",
+      "adaptive": {
+        "leading": "add",
+        "targetWeight": 0.9999950118995204,
+        "entropyBits": 0.00009505209710144048
+      },
+      "fixed": {
+        "leading": "add",
+        "targetWeight": 0.9999771008075108,
+        "entropyBits": 0.00038601221706225123
+      }
+    },
+    {
+      "domain": "percentages",
+      "strategy": "scale",
+      "adaptive": {
+        "leading": "scale",
+        "targetWeight": 0.9999950118995203,
+        "entropyBits": 0.00009505209710160064
+      },
+      "fixed": {
+        "leading": "scale",
+        "targetWeight": 0.9999771008075107,
+        "entropyBits": 0.0003860122170624113
+      }
+    },
+    {
+      "domain": "percentages",
+      "strategy": "reverse",
+      "adaptive": {
+        "leading": "reverse",
+        "targetWeight": 0.9999950118995203,
+        "entropyBits": 0.00009505209710160066
+      },
+      "fixed": {
+        "leading": "reverse",
+        "targetWeight": 0.9787014691197687,
+        "entropyBits": 0.1489246558731875
+      }
+    },
+    {
+      "domain": "algebra",
+      "strategy": "correct",
+      "adaptive": {
+        "leading": "correct",
+        "targetWeight": 0.9999950118995204,
+        "entropyBits": 0.00009505209710144048
+      },
+      "fixed": {
+        "leading": "correct",
+        "targetWeight": 0.9999950118995204,
+        "entropyBits": 0.00009505209710144048
+      }
+    },
+    {
+      "domain": "algebra",
+      "strategy": "sign",
+      "adaptive": {
+        "leading": "sign",
+        "targetWeight": 0.9999950118995204,
+        "entropyBits": 0.00009505209710144048
+      },
+      "fixed": {
+        "leading": "sign",
+        "targetWeight": 0.9999950118995204,
+        "entropyBits": 0.00009505209710144048
+      }
+    },
+    {
+      "domain": "algebra",
+      "strategy": "coefficient",
+      "adaptive": {
+        "leading": "coefficient",
+        "targetWeight": 0.9999950118995203,
+        "entropyBits": 0.00009505209710160064
+      },
+      "fixed": {
+        "leading": "coefficient",
+        "targetWeight": 0.9999950118995203,
+        "entropyBits": 0.00009505209710160064
+      }
+    },
+    {
+      "domain": "algebra",
+      "strategy": "multiply",
+      "adaptive": {
+        "leading": "multiply",
+        "targetWeight": 0.9999950118995203,
+        "entropyBits": 0.00009505209710160066
+      },
+      "fixed": {
+        "leading": "multiply",
+        "targetWeight": 0.9999950118995203,
+        "entropyBits": 0.00009505209710160066
+      }
+    },
+    {
+      "domain": "geometry",
+      "strategy": "correct",
+      "adaptive": {
+        "leading": "correct",
+        "targetWeight": 0.9999950118995204,
+        "entropyBits": 0.00009505209710144048
+      },
+      "fixed": {
+        "leading": "correct",
+        "targetWeight": 0.9999950118995204,
+        "entropyBits": 0.00009505209710144048
+      }
+    },
+    {
+      "domain": "geometry",
+      "strategy": "perimeter",
+      "adaptive": {
+        "leading": "perimeter",
+        "targetWeight": 0.9999950118995204,
+        "entropyBits": 0.00009505209710144048
+      },
+      "fixed": {
+        "leading": "perimeter",
+        "targetWeight": 0.9999950118995204,
+        "entropyBits": 0.00009505209710144048
+      }
+    },
+    {
+      "domain": "geometry",
+      "strategy": "side",
+      "adaptive": {
+        "leading": "side",
+        "targetWeight": 0.9999950118995203,
+        "entropyBits": 0.00009505209710160064
+      },
+      "fixed": {
+        "leading": "side",
+        "targetWeight": 0.9999950118995203,
+        "entropyBits": 0.00009505209710160064
+      }
+    },
+    {
+      "domain": "geometry",
+      "strategy": "sum",
+      "adaptive": {
+        "leading": "sum",
+        "targetWeight": 0.9999950118995203,
+        "entropyBits": 0.00009505209710160066
+      },
+      "fixed": {
+        "leading": "sum",
+        "targetWeight": 0.9999950118995203,
+        "entropyBits": 0.00009505209710160066
+      }
+    },
+    {
+      "domain": "statistics",
+      "strategy": "correct",
+      "adaptive": {
+        "leading": "correct",
+        "targetWeight": 0.9999950118995204,
+        "entropyBits": 0.00009505209710144048
+      },
+      "fixed": {
+        "leading": "correct",
+        "targetWeight": 0.9999937985830739,
+        "entropyBits": 0.00011622491111296309
+      }
+    },
+    {
+      "domain": "statistics",
+      "strategy": "sum",
+      "adaptive": {
+        "leading": "sum",
+        "targetWeight": 0.9999950118995204,
+        "entropyBits": 0.00009505209710144048
+      },
+      "fixed": {
+        "leading": "sum",
+        "targetWeight": 0.9999937985853063,
+        "entropyBits": 0.00011622482189569635
+      }
+    },
+    {
+      "domain": "statistics",
+      "strategy": "range",
+      "adaptive": {
+        "leading": "range",
+        "targetWeight": 0.9999950118995203,
+        "entropyBits": 0.00009505209710160064
+      },
+      "fixed": {
+        "leading": "range",
+        "targetWeight": 0.9999937985853063,
+        "entropyBits": 0.00011622482189569633
+      }
+    },
+    {
+      "domain": "statistics",
+      "strategy": "median",
+      "adaptive": {
+        "leading": "median",
+        "targetWeight": 0.9999950118995203,
+        "entropyBits": 0.00009505209710160066
+      },
+      "fixed": {
+        "leading": "median",
+        "targetWeight": 0.9999937985830739,
+        "entropyBits": 0.00011622491111296307
+      }
+    },
+    {
+      "domain": "probability",
+      "strategy": "correct",
+      "adaptive": {
+        "leading": "correct",
+        "targetWeight": 0.9999950118995204,
+        "entropyBits": 0.00009505209710144048
+      },
+      "fixed": {
+        "leading": "correct",
+        "targetWeight": 0.9999937985830737,
+        "entropyBits": 0.00011622491111328343
+      }
+    },
+    {
+      "domain": "probability",
+      "strategy": "complement",
+      "adaptive": {
+        "leading": "complement",
+        "targetWeight": 0.9999950118995204,
+        "entropyBits": 0.00009505209710144048
+      },
+      "fixed": {
+        "leading": "complement",
+        "targetWeight": 0.9999937985830737,
+        "entropyBits": 0.00011622491111328343
+      }
+    },
+    {
+      "domain": "probability",
+      "strategy": "reverse",
+      "adaptive": {
+        "leading": "reverse",
+        "targetWeight": 0.9999950118995203,
+        "entropyBits": 0.00009505209710160064
+      },
+      "fixed": {
+        "leading": "reverse",
+        "targetWeight": 0.9999937985853063,
+        "entropyBits": 0.00011622482189569635
+      }
+    },
+    {
+      "domain": "probability",
+      "strategy": "difference",
+      "adaptive": {
+        "leading": "difference",
+        "targetWeight": 0.9999950118995203,
+        "entropyBits": 0.00009505209710160066
+      },
+      "fixed": {
+        "leading": "difference",
+        "targetWeight": 0.9999937985853063,
+        "entropyBits": 0.00011622482189569638
+      }
+    },
+    {
+      "domain": "calculus",
+      "strategy": "correct",
+      "adaptive": {
+        "leading": "correct",
+        "targetWeight": 0.9999950118995204,
+        "entropyBits": 0.00009505209710144048
+      },
+      "fixed": {
+        "leading": "correct",
+        "targetWeight": 0.9999791910829129,
+        "entropyBits": 0.00035365803577470684
+      }
+    },
+    {
+      "domain": "calculus",
+      "strategy": "power",
+      "adaptive": {
+        "leading": "power",
+        "targetWeight": 0.9999950118995204,
+        "entropyBits": 0.00009505209710144048
+      },
+      "fixed": {
+        "leading": "power",
+        "targetWeight": 0.9999791913675669,
+        "entropyBits": 0.00035364860109016714
+      }
+    },
+    {
+      "domain": "calculus",
+      "strategy": "factor",
+      "adaptive": {
+        "leading": "factor",
+        "targetWeight": 0.9999950118995203,
+        "entropyBits": 0.00009505209710160064
+      },
+      "fixed": {
+        "leading": "factor",
+        "targetWeight": 0.9999791913675669,
+        "entropyBits": 0.00035364860109016714
+      }
+    },
+    {
+      "domain": "calculus",
+      "strategy": "original",
+      "adaptive": {
+        "leading": "original",
+        "targetWeight": 0.9999950118995203,
+        "entropyBits": 0.00009505209710160066
+      },
+      "fixed": {
+        "leading": "original",
+        "targetWeight": 0.9999791910829128,
+        "entropyBits": 0.000353658035774867
+      }
+    },
+    {
+      "domain": "vectors",
+      "strategy": "correct",
+      "adaptive": {
+        "leading": "correct",
+        "targetWeight": 0.9999950118995204,
+        "entropyBits": 0.00009505209710144048
+      },
+      "fixed": {
+        "leading": "correct",
+        "targetWeight": 0.9999937985853062,
+        "entropyBits": 0.00011622482189585651
+      }
+    },
+    {
+      "domain": "vectors",
+      "strategy": "sum",
+      "adaptive": {
+        "leading": "sum",
+        "targetWeight": 0.9999950118995204,
+        "entropyBits": 0.00009505209710144048
+      },
+      "fixed": {
+        "leading": "sum",
+        "targetWeight": 0.9999937985830737,
+        "entropyBits": 0.00011622491111328343
+      }
+    },
+    {
+      "domain": "vectors",
+      "strategy": "first",
+      "adaptive": {
+        "leading": "first",
+        "targetWeight": 0.9999950118995203,
+        "entropyBits": 0.00009505209710160064
+      },
+      "fixed": {
+        "leading": "first",
+        "targetWeight": 0.9999937985853063,
+        "entropyBits": 0.00011622482189569635
+      }
+    },
+    {
+      "domain": "vectors",
+      "strategy": "last",
+      "adaptive": {
+        "leading": "last",
+        "targetWeight": 0.9999950118995203,
+        "entropyBits": 0.00009505209710160066
+      },
+      "fixed": {
+        "leading": "last",
+        "targetWeight": 0.9999937985830738,
+        "entropyBits": 0.00011622491111312328
+      }
+    },
+    {
+      "domain": "coding",
+      "strategy": "correct",
+      "adaptive": {
+        "leading": "correct",
+        "targetWeight": 0.9999950118995204,
+        "entropyBits": 0.00009505209710144048
+      },
+      "fixed": {
+        "leading": "correct",
+        "targetWeight": 0.49999288262181774,
+        "entropyBits": 1.0002354842650363
+      }
+    },
+    {
+      "domain": "coding",
+      "strategy": "inclusive",
+      "adaptive": {
+        "leading": "inclusive",
+        "targetWeight": 0.9999950118995204,
+        "entropyBits": 0.00009505209710144048
+      },
+      "fixed": {
+        "leading": "inclusive",
+        "targetWeight": 0.9999715308922369,
+        "entropyBits": 0.0004709621306474614
+      }
+    },
+    {
+      "domain": "coding",
+      "strategy": "zero",
+      "adaptive": {
+        "leading": "zero",
+        "targetWeight": 0.9999950118995203,
+        "entropyBits": 0.00009505209710160064
+      },
+      "fixed": {
+        "leading": "correct",
+        "targetWeight": 0.49999288262181774,
+        "entropyBits": 1.0002354842650363
+      }
+    },
+    {
+      "domain": "coding",
+      "strategy": "last",
+      "adaptive": {
+        "leading": "last",
+        "targetWeight": 0.9999950118995203,
+        "entropyBits": 0.00009505209710160066
+      },
+      "fixed": {
+        "leading": "last",
+        "targetWeight": 0.999971530892237,
+        "entropyBits": 0.00047096213064730125
+      }
+    }
+  ]
+}
