@@ -916,3 +916,27 @@
     transition: none;
   }
 }
+
+.mistake-guide {
+  border-left: 3px solid #b56a31;
+  background: #fff8ef;
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin: 16px 0;
+}
+.mistake-guide h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+.mistake-guide ul {
+  padding-left: 20px;
+  font-size: 14px;
+  line-height: 1.7;
+}
+.mistake-guide li + li {
+  margin-top: 10px;
+}
+.matching-method {
+  display: block;
+  color: #805023;
+}

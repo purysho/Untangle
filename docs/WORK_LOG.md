@@ -67,3 +67,10 @@
 - Separate CI run 38743752029 passed for released source commit 1e9879a514aee44ed15211bac5c5a5af6aa181f9.
 - Confirmed v0.3.0 is published, with eight platform downloads and SHA256SUMS.txt: https://github.com/purysho/Untangle/releases/tag/v0.3.0.
 - Optional inference requires a separately supplied compatible llama-server executable and GGUF model. Core diagnosis and local retrieval work without model weights. Builds remain unsigned; installer installation and Gatekeeper acceptance are outside native smoke-test coverage.
+
+## 2026-10-15 — Explicit feedback and first-answer guidance (v0.3.1)
+
+- Root cause: incorrect results used an indirect heading, and checked solutions were collapsed. New learners received uncertainty messaging without practical guidance.
+- Added explicit correct/incorrect headings, first-answer common-mistake suggestions, cautious matching-method labels and an automatically open checked walkthrough after a first incorrect answer. Guidance is scoped to the current subject session and clears on follow-up.
+- Browser regression reproduced missing incorrect feedback before the fix. Added coverage for unmatched wrong answers, guidance clearing, second answers and equivalent correct fractions; updated native smoke assertion.
+- Local verification: 39 unit tests, strict TypeScript and production build passed. All eight browser tests passed using isolated browser workers; the alternate Chromium runtime cannot reuse browser contexts in this environment. Native release verification follows.

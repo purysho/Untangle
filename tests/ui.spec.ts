@@ -12,9 +12,15 @@ test("original fraction scenario, adaptive question, inspector and export", asyn
   await page.getByLabel("What answer did you get?").fill("4/6");
   await page.getByRole("button", { name: "Explore my answer" }).click();
   await expect(
-    page.getByRole("heading", { name: "Let’s look at your method." }),
+    page.getByRole("heading", { name: "That answer is incorrect." }),
   ).toBeVisible();
-  await page.getByText("See the checked explanation", { exact: true }).click();
+  await expect(
+    page.getByRole("heading", { name: "Common mistakes to check" }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("This could produce your answer", { exact: false }),
+  ).toBeVisible();
+  await expect(page.locator(".worked-solution")).toHaveAttribute("open", "");
   await expect(
     page.getByText("Both fractions need equal-sized parts.", { exact: false }),
   ).toBeVisible();
@@ -62,7 +68,7 @@ test("every maths topic and coding can run a real answer loop", async ({
   await page.getByLabel("What answer did you get?").fill("10");
   await page.getByRole("button", { name: "Explore my answer" }).click();
   await expect(
-    page.getByRole("heading", { name: "That answer checks out." }),
+    page.getByRole("heading", { name: "That answer is correct." }),
   ).toBeVisible();
 });
 test("local knowledge imports TXT and PDF and keeps content inert", async ({
@@ -143,16 +149,66 @@ test("imported sessions continue with an unseen task and preserve evidence", asy
     domain: "fractions",
     events: [{ task: { input: "3/4 + 1/2" }, answer: "4/6" }],
   };
-  await page
-    .getByLabel("Import learning session")
-    .setInputFiles({
-      name: "session.json",
-      mimeType: "application/json",
-      buffer: Buffer.from(JSON.stringify(payload)),
-    });
+  await page.getByLabel("Import learning session").setInputFiles({
+    name: "session.json",
+    mimeType: "application/json",
+    buffer: Buffer.from(JSON.stringify(payload)),
+  });
   await expect(page.getByText("1 answers explored")).toBeVisible();
   expect(await page.locator("#problem").inputValue()).not.toBe("3/4 + 1/2");
   await page.getByLabel("What answer did you get?").fill("1");
   await page.getByRole("button", { name: "Explore my answer" }).click();
   await expect(page.getByText("2 answers explored")).toBeVisible();
+});
+
+test("first wrong answer gets guidance without claiming a diagnosis", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByLabel("What answer did you get?").fill("99");
+  await page.getByRole("button", { name: "Explore my answer" }).click();
+  await expect(
+    page.getByRole("heading", { name: "That answer is incorrect." }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("We don’t have earlier answers to compare yet.", {
+      exact: false,
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Common mistakes to check" }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("This could produce your answer", { exact: false }),
+  ).toHaveCount(0);
+  await expect(page.locator(".worked-solution ol li")).not.toHaveCount(0);
+  await page.getByRole("button", { name: "Try a useful follow-up" }).click();
+  await expect(
+    page.getByRole("heading", { name: "Common mistakes to check" }),
+  ).toHaveCount(0);
+  await page.getByLabel("What answer did you get?").fill("99");
+  await page.getByRole("button", { name: "Explore my answer" }).click();
+  await expect(
+    page.getByRole("heading", { name: "Common mistakes to check" }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole("heading", { name: "That answer is incorrect." }),
+  ).toBeVisible();
+});
+test("equivalent correct first answer receives no mistake walkthrough", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByLabel("What answer did you get?").fill("10/8");
+  await page.getByRole("button", { name: "Explore my answer" }).click();
+  await expect(
+    page.getByRole("heading", { name: "That answer is correct." }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Common mistakes to check" }),
+  ).toHaveCount(0);
+  await expect(page.locator(".worked-solution")).not.toHaveAttribute(
+    "open",
+    "",
+  );
 });

@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import {
+  strategies,
   type Domain,
   parseTask,
   parseAnswer,
@@ -85,6 +86,7 @@ export function App() {
     task: Task;
     answer: string;
     correct: boolean;
+    firstAttempt: boolean;
   } | null>(null);
   const [error, setError] = useState("");
   const [status, setStatus] = useState("");
@@ -169,6 +171,7 @@ export function App() {
       persist(next);
       setResult({
         task: t,
+        firstAttempt: session.events.length === 0,
         answer,
         correct: parseAnswer(answer) === predict(t, "correct"),
       });
@@ -357,8 +360,8 @@ export function App() {
                   <section className="answer-feedback" aria-live="polite">
                     <h2>
                       {result.correct
-                        ? "That answer checks out."
-                        : "Let’s look at your method."}
+                        ? "That answer is correct."
+                        : "That answer is incorrect."}
                     </h2>
                     <p>
                       Your answer: <strong>{result.answer}</strong>.{" "}
@@ -366,6 +369,43 @@ export function App() {
                         ? "Another question can help us check the method behind it."
                         : "Several methods or a slip could explain this. One answer is not enough to decide."}
                     </p>
+                    {!result.correct && result.firstAttempt && (
+                      <section
+                        className="mistake-guide"
+                        aria-label="First-answer guidance"
+                      >
+                        <h3>Common mistakes to check</h3>
+                        <p>
+                          We don’t have earlier answers to compare yet. These
+                          are possibilities to check, not a diagnosis. Compare
+                          each method with your working, then follow the steps
+                          below.
+                        </p>
+                        <ul>
+                          {strategies(result.task.domain)
+                            .filter(
+                              (s) => s.id !== "correct" && s.id !== "guess",
+                            )
+                            .map((s) => (
+                              <li key={s.id}>
+                                <strong>{s.name}</strong>: {s.description}
+                                {predict(result.task, s.id) ===
+                                  parseAnswer(result.answer) && (
+                                  <span className="matching-method">
+                                    {" "}
+                                    This could produce your answer, but we need
+                                    a follow-up to check whether you used it.
+                                  </span>
+                                )}
+                              </li>
+                            ))}
+                          <li>
+                            A calculation slip or another method is also
+                            possible.
+                          </li>
+                        </ul>
+                      </section>
+                    )}
                     <p>
                       {info.tentative
                         ? "We’re still gathering clues."
@@ -385,8 +425,12 @@ export function App() {
                         Try a useful follow-up →
                       </button>
                     )}
-                    <details className="worked-solution">
-                      <summary>See the checked explanation</summary>
+                    <details
+                      key={result.task.id}
+                      className="worked-solution"
+                      open={!result.correct && result.firstAttempt}
+                    >
+                      <summary>Walk through the solution</summary>
                       <p className="verified-answer">
                         Checked answer:{" "}
                         <Fraction value={predict(result.task, "correct")!} />

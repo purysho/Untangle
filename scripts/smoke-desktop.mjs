@@ -32,7 +32,7 @@ try {
   await page.getByLabel("What answer did you get?").fill("4/6");
   await page.getByRole("button", { name: "Explore my answer" }).click();
   await expect(
-    page.getByRole("heading", { name: "Let’s look at your method." }),
+    page.getByRole("heading", { name: "That answer is incorrect." }),
   ).toBeVisible();
   await page.getByText("Show the reasoning", { exact: false }).click();
   await expect(

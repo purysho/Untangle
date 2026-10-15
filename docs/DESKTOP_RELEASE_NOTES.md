@@ -1,3 +1,10 @@
+Untangle 0.3.1 improves answer feedback and first-attempt guidance.
+
+- Answers are explicitly marked correct or incorrect.
+- A first incorrect answer shows common mistakes as possibilities, with matching error patterns explained without claiming a diagnosis.
+- The first incorrect answer opens the checked, step-by-step solution automatically.
+- Follow-up questions continue to gather evidence about the learner’s method.
+
 Untangle is rebuilt around its original purpose: a debugger for understanding.
 
 - Friendly problem → answer → adaptive follow-up flow.
