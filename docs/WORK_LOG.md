@@ -59,3 +59,11 @@
 - Added repeated-question protection to avoid counting the same task as independent evidence; subject progress is retained separately.
 - Changed the existing mint interwoven mark to a U shape in the UI and generated PNG/ICO/ICNS assets, per user steering.
 - Current local verification: 39 unit tests, six browser tests and strict production build pass. Desktop/mobile screenshots inspected for layout, text, colour, equation readability, navigation and overflow. New native release matrix verification follows.
+
+### v0.3.0 native release verification
+
+- Verified GitHub Actions run 38743751935 completed successfully on all four native runners: Windows x64, Linux x64, macOS Intel and macOS Apple Silicon. Each packaging job and its native app smoke test passed on the first attempt.
+- Native checks cover startup, renderer isolation, learning diagnosis, bundled PDF worker/import, local-AI bridge availability, persistence and session export. Bridge availability does not establish model quality or inference performance on each OS.
+- Separate CI run 38743752029 passed for released source commit 1e9879a514aee44ed15211bac5c5a5af6aa181f9.
+- Confirmed v0.3.0 is published, with eight platform downloads and SHA256SUMS.txt: https://github.com/purysho/Untangle/releases/tag/v0.3.0.
+- Optional inference requires a separately supplied compatible llama-server executable and GGUF model. Core diagnosis and local retrieval work without model weights. Builds remain unsigned; installer installation and Gatekeeper acceptance are outside native smoke-test coverage.
