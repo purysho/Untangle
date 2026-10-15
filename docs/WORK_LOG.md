@@ -74,3 +74,10 @@
 - Added explicit correct/incorrect headings, first-answer common-mistake suggestions, cautious matching-method labels and an automatically open checked walkthrough after a first incorrect answer. Guidance is scoped to the current subject session and clears on follow-up.
 - Browser regression reproduced missing incorrect feedback before the fix. Added coverage for unmatched wrong answers, guidance clearing, second answers and equivalent correct fractions; updated native smoke assertion.
 - Local verification: 39 unit tests, strict TypeScript and production build passed. All eight browser tests passed using isolated browser workers; the alternate Chromium runtime cannot reuse browser contexts in this environment. Native release verification follows.
+
+### v0.3.1 release outcome
+
+- All eight browser checks and 39 unit tests passed, along with strict TypeScript and the production build. Inspected the first-wrong-answer screenshot for legibility, guidance, visible checked answer and open solution steps.
+- The first remote release attempt failed during npm ci because the upload path truncated the lockfile. Restored the complete validated JSON from the preceding repository revision with only version fields changed. No dependency changes were intended.
+- Verification CI run 38747780968 passed. Native release run 38747781139 passed Windows x64, Linux x64, Intel macOS and Apple Silicon macOS packaging and app smoke tests; publication completed successfully.
+- Confirmed https://github.com/purysho/Untangle/releases/tag/v0.3.1 is published with eight platform downloads and SHA256SUMS.txt. Signing and installer acceptance limitations remain unchanged.
